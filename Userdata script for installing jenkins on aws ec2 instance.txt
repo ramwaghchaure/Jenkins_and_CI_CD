@@ -1,0 +1,63 @@
+https://www.linkedin.com/pulse/using-user-data-script-jenkins-installation-aws-ec2-linux-shah/
+instance oS: rhel 9
+EBS SIZE = 15 gb
+port open : 8080
+java version : java-openjdk11
+
+==========================================================
+#!/bin/bash
+sudo bash
+su -
+yum update -y
+yum install wget -y
+wget -O /etc/yum.repos.d/jenkins.repo https://pkg.jenkins.io/redhat-stable/jenkins.repo
+rpm --import https://pkg.jenkins.io/redhat-stable/jenkins.io-2023.key
+yum install fontconfig java-17-openjdk  java-17-openjdk-devel
+yum install jenkins
+systemctl daemon-reload
+systemctl start Jenkins
+cd/root
+export JAVA_HOME=/usr/lib/jvm/java-17-openjdk-17.0.14.0.7-2.el9.x86_64
+echo "JAVA_HOME=/usr/lib/jvm/java-17-openjdk-17.0.14.0.7-2.el9.x86_64" >> /root/.bash_profile
+echo -e "PATH=\$PATH:\$JAVA_HOME:\$HOME/bin" >> /root/.bash_profile 
+echo "export PATH" >> /root/.bash_profile
+source /root/.bash_profile
+
+
+cat /root/.bash_profle configuration should be below.
+JAVA_HOME=/usr/lib/jvm/java-17-openjdk-17.0.14.0.7-2.el9.x86_64
+PATH=$PATH:$JAVA_HOME:$HOME/bin
+export PATH
+---------------------------------------------------------------------
+once done install maven and git
+mkdir -p /opt/maven ; cd /opt/maven ;
+wget https://dlcdn.apache.org/maven/maven-3/3.9.9/binaries/apache-maven-3.9.9-bin.tar.gz
+tar -zxvf apache-maven-3.9.9-bin.tar.gz
+yum install git -y
+echo "M2_HOME=/opt/maven/apache-maven-3.9.9-bin" >> /root/.bash_profile
+echo -e "M2=/$M2_home/bin" >> /root/.bash_profile
+also correct the path variable to like following way.
+PATH=$PATH:$JAVA_HOME:$M2_HOME:$M2:$HOME/bin
+
+login to jenkins gui by retrieving password from following file.
+/var/lib/jenkins/secrets/initialAdminPassword
+upon installing git from gui install plugins for maven and git (maven invoker and GitHub)
+
+set maven and git and jdk path in global tool configuration.
+also after ec2 reboot, public IP gets change, and you can add new public ip in following file on jenkins instance
+and then restart jenkins service.
+
+/var/lib/jenkins/jenkins.model.JenkinsLocationConfiguration.xml
+-------------------------------------------------------------------------------------
+to add the swap space to the ex2 instance cmd is 
+
+dd if=/dev/zero of=/swapfile bs=1M count=1024 status=progress
+chmod -v 0600 /swapfile
+mkswap /swapfile
+swapon -v /swapfile
+free -m
+swapon -s
+echo "/swapfile 	swap 	swap 	defaults 	0 	0" >> /etc/fstab
+
+
+
